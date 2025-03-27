@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const leadsRouter = require('./routes/leads');
+const leadsRouter = require('./src/routes/leads');
 
 const app = express();
 
@@ -12,7 +12,7 @@ app.use(express.json());
 app.use('/api/leads', leadsRouter);
 
 // Conexión MySQL (solo para verificar)
-const pool = require('./config/db');
+const pool = require('./src/config/db');
 pool.getConnection()
   .then(conn => {
     console.log('✅ Conectado a MySQL');

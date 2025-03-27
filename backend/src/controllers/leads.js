@@ -1,35 +1,23 @@
-const pool = require('../config/db');
+const Lead = require('../models/Lead');
 
-const leadController = {
-  createLead: async (req, res) => {
-    try {
-      const { nombre, email, telefono, interes } = req.body;
-      
-      const [result] = await pool.query(
-        `INSERT INTO leads (nombre, email, telefono, interes) 
-         VALUES (?, ?, ?, ?)`,
-        [nombre, email, telefono, interes]
-      );
-      
-      res.status(201).json({
-        id: result.insertId,
-        nombre,
-        email
-      });
-    } catch (error) {
-      console.error('MySQL Error:', error);
-      res.status(500).json({ error: 'Database error' });
-    }
-  },
+// Ejemplo: Registrar lead desde un formulario
+const registerLead = async (req, res) => {
+  const { name, email } = req.body;
 
-  getLeads: async (req, res) => {
-    try {
-      const [rows] = await pool.query('SELECT * FROM leads ORDER BY fecha_registro DESC');
-      res.json(rows);
-    } catch (error) {
-      res.status(500).json({ error: error.message });
+  try {
+    // Validar email (opcional)
+    if (!email.includes('@')) {
+      return res.status(400).json({ error: 'Email inválido' });
     }
+
+    const existingLead = await Lead.findByEmail(email);
+    if (existingLead) {
+      return res.status(409).json({ error: 'El email ya está registrado' });
+    }
+
+    const newLead = await Lead.create(name, email);
+    res.status(201).json(newLead);
+  } catch (error) {
+    res.status(500).json({ error: 'Error al guardar el lead' });
   }
 };
-
-module.exports = leadController;
