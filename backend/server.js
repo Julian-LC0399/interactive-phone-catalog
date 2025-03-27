@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const leadsRouter = require('./src/routes/leads');
+const phonesRouter = require('./src/routes/phones');
 
 const app = express();
 
@@ -10,6 +11,7 @@ app.use(express.json());
 
 // Rutas
 app.use('/api/leads', leadsRouter);
+app.use('/api/phones', phonesRouter);
 
 // Conexión MySQL (solo para verificar)
 const pool = require('./src/config/db');
