@@ -1,0 +1,43 @@
+### 🛡️ Archivo .gitignore para TECNO-LANDING_PAGES-MA... ###
+
+# ------ ARCHIVOS DEL SISTEMA ------ #
+.DS_Store
+Thumbs.db
+__MACOSX/
+*.log
+*.swp
+
+# ------ BACKEND (Node.js) ------ #
+backend/node_modules/
+backend/.env
+backend/.env.*
+backend/npm-debug.log*
+backend/yarn-debug.log*
+backend/yarn-error.log*
+
+# ------ FRONTEND (Node.js/React/Vue) ------ #
+frontend/node_modules/
+frontend/.env
+frontend/.env.*
+frontend/dist/
+frontend/build/
+frontend/.cache/
+frontend/.vite/
+
+# ------ COMÚN ------ #
+*/**/package-lock.json  # Ignora en cualquier subdirectorio
+*/**/yarn.lock
+*/**/.pnp.*
+
+# ------ EDITORES/IDEs ------ #
+.idea/
+.vscode/
+*.code-workspace
+
+# ------ TESTING/COBERTURA ------ #
+coverage/
+*.lcov
+.nyc_output/
+
+# ------ DOCKER ------ #
+docker-compose.override.yml
