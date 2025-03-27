@@ -1,6 +1,5 @@
 const Lead = require('../models/Lead');
-
-// Ejemplo: Registrar lead desde un formulario
+// Registrar lead desde un formulario
 const registerLead = async (req, res) => {
   const { name, email } = req.body;
 
