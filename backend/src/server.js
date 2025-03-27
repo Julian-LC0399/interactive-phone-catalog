@@ -1,28 +1,24 @@
-const express = require("express");
-const mongoose = require("mongoose");
-const cors = require("cors");
-const leadsRoutes = require("./routes/leads");
-require("dotenv").config();
+const express = require('express');
+const cors = require('cors');
+const leadsRouter = require('./routes/leads');
 
 const app = express();
-const PORT = process.env.PORT || 8000;
 
 // Middleware
 app.use(cors());
 app.use(express.json());
 
-// Conectar a MongoDB
-mongoose.connect(process.env.MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-.then(() => console.log("Conectado a la BD"))
-.catch(err => console.error("No se pudo conectar a la BD", err));
-
 // Rutas
-app.use("/api/leads", leadsRoutes);
+app.use('/api/leads', leadsRouter);
 
-// Iniciar el servidor
-app.listen(PORT, () => {
-  console.log(`Servidor corriendo en http://localhost:${PORT}`);
-});
+// Conexión MySQL (solo para verificar)
+const pool = require('./config/db');
+pool.getConnection()
+  .then(conn => {
+    console.log('✅ Conectado a MySQL');
+    conn.release();
+  })
+  .catch(err => console.error('❌ Error MySQL:', err));
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Servidor en puerto ${PORT}`));
