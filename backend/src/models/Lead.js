@@ -1,13 +1,13 @@
 const pool = require('../config/db');
 
 class Lead {
-  // Registrar nuevo lead
-  static async create(name, email) {
+  // Crear nuevo lead
+  static async create(name, email, interest) {
     const [result] = await pool.query(
-      'INSERT INTO leads (name, email) VALUES (?, ?)',
-      [name, email]
+      'INSERT INTO leads (name, email, interest) VALUES (?, ?, ?)',
+      [name, email, interest]
     );
-    return { id: result.insertId, name, email };
+    return { id: result.insertId, name, email, interest };
   }
 
   // Obtener todos los leads
@@ -16,7 +16,7 @@ class Lead {
     return rows;
   }
 
-  // Buscar por email
+  // Buscar lead por email
   static async findByEmail(email) {
     const [rows] = await pool.query('SELECT * FROM leads WHERE email = ?', [email]);
     return rows[0];

@@ -1,22 +1,36 @@
 const Lead = require('../models/Lead');
-// Registrar lead desde un formulario
-const registerLead = async (req, res) => {
-  const { name, email } = req.body;
 
+// Crear lead
+exports.createLead = async (req, res) => {
   try {
-    // Validar email (opcional)
-    if (!email.includes('@')) {
-      return res.status(400).json({ error: 'Email inválido' });
+    const { name, email, interest } = req.body;
+
+    // Validación básica
+    if (!name || !email || !interest) {
+      return res.status(400).json({ error: 'Nombre, email e interés son requeridos' });
     }
 
+    // Verificar si el email ya existe
     const existingLead = await Lead.findByEmail(email);
     if (existingLead) {
       return res.status(409).json({ error: 'El email ya está registrado' });
     }
 
-    const newLead = await Lead.create(name, email);
+    // Crear el lead
+    const newLead = await Lead.create(name, email, interest);
     res.status(201).json(newLead);
+
   } catch (error) {
-    res.status(500).json({ error: 'Error al guardar el lead' });
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Obtener todos los leads
+exports.getAllLeads = async (req, res) => {
+  try {
+    const leads = await Lead.getAll();
+    res.status(200).json(leads);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 };
