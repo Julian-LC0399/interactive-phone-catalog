@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import PhoneCatalog from './components/PhoneCatalog';
-import LeadForm from './components/LeadForm';
-import Chatbot from './components/Chatbot';
-import PhoneDetails from './components/PhoneDetails'; 
+import PhoneCatalog from './components/catalog/PhoneCatalog.jsx';
+import LeadForm from './components/leads/LeadForm.jsx';
+import Chatbot from './components/chatbot/Chatbot.jsx';
+import PhoneDetails from './components/details/PhoneDetails.jsx'
 import camon19Image from './images/camon19.png'; // Importa la imagen
 import spark8Image from './images/spark8.jpg'; // Importa la imagen
 import spark30Image from './images/spark30.png'
-import './style.css';
+
 
 // Definición de la lista de teléfonos
 const phones = [
