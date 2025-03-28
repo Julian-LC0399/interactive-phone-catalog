@@ -1,124 +1,194 @@
-import React, { useState } from 'react';
-import { FiUser, FiMail, FiPhone } from 'react-icons/fi';
-import './LeadForm.css';
+import React, { useState } from "react";
+import axios from "axios";
+import PropTypes from "prop-types";
+import './LeadForm.css'
 
-const LeadForm = () => {
+const LeadForm = ({ apiUrl = "http://localhost:8000/api/leads" }) => {
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    interest: ''
+    name: "",
+    email: "",
   });
-  const [submitted, setSubmitted] = useState(false);
-  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [isOpen, setIsOpen] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [touched, setTouched] = useState({
+    name: false,
+    email: false,
+  });
+
+  // Validate email format
+  const validateEmail = (email) => {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
+  };
+
+  // Form validation
+  const errors = {
+    name: formData.name.trim() === "" ? "Nombre es requerido" : "",
+    email:
+      formData.email.trim() === ""
+        ? "Email es requerido"
+        : !validateEmail(formData.email)
+        ? "Por favor ingresa un email válido"
+        : "",
+  };
+
+  const isFormValid = Object.values(errors).every((x) => x === "");
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleBlur = (field) => {
+    setTouched((prev) => ({
+      ...prev,
+      [field]: true,
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-    
-    if (!formData.name || !formData.email) {
-      setError('Nombre y correo electrónico son requeridos');
-      return;
-    }
+    setLoading(true);
+    setError("");
+    setSuccess(false);
 
     try {
-      // Simulación del envío sin necesidad de la API
-      console.log('Datos enviados:', formData);
-      setSubmitted(true);
-      setFormData({ name: '', email: '', phone: '', interest: '' });
+      await axios.post(apiUrl, formData);
+      setSuccess(true);
+      setFormData({ name: "", email: "" });
+      // Auto-close form after 3 seconds
+      setTimeout(() => {
+        setIsOpen(false);
+        setSuccess(false);
+      }, 3000);
     } catch (err) {
-      setError('Error al procesar el formulario');
-      console.error(err);
+      const errorMessage =
+        err.response?.data?.message ||
+        "Hubo un problema al enviar tus datos. Inténtalo de nuevo más tarde.";
+      setError(errorMessage);
+    } finally {
+      setLoading(false);
     }
   };
 
-  if (submitted) {
-    return (
-      <div className="success-message">
-        <h3>¡Gracias por tu interés!</h3>
-        <p>Nos pondremos en contacto contigo pronto.</p>
-      </div>
-    );
-  }
+  const toggleForm = () => {
+    setIsOpen(!isOpen);
+    if (isOpen) {
+      setError("");
+      setSuccess(false);
+    }
+  };
 
   return (
-    <div className="lead-form-container">
-      <h2>¿Interesado en nuestros productos?</h2>
-      <p>Déjanos tus datos y te contactaremos.</p>
-      
-      {error && <div className="error-message">{error}</div>}
-      
-      <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label htmlFor="name">
-            <FiUser /> Nombre completo
-          </label>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        
-        <div className="form-group">
-          <label htmlFor="email">
-            <FiMail /> Correo electrónico
-          </label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        
-        <div className="form-group">
-          <label htmlFor="phone">
-            <FiPhone /> Teléfono (opcional)
-          </label>
-          <input
-            type="tel"
-            id="phone"
-            name="phone"
-            value={formData.phone}
-            onChange={handleChange}
-          />
-        </div>
-        
-        <div className="form-group">
-          <label htmlFor="interest">Modelo de interés</label>
-          <select
-            id="interest"
-            name="interest"
-            value={formData.interest}
-            onChange={handleChange}
-          >
-            <option value="">Selecciona un modelo</option>
-            <option value="CAMON 20 Pro">CAMON 20 Pro</option>
-            <option value="SPARK 10 Pro">SPARK 10 Pro</option>
-            <option value="PHANTOM X2">PHANTOM X2</option>
-            <option value="POVA 5 Pro">POVA 5 Pro</option>
-          </select>
-        </div>
-        
-        <button type="submit" className="submit-btn">
-          Enviar información
-        </button>
-      </form>
+    <div className="lead-form-wrapper">
+      <button
+        className={`lead-form-toggle ${isOpen ? "active" : ""}`}
+        onClick={toggleForm}
+        aria-expanded={isOpen}
+        aria-controls="lead-form"
+      >
+        {isOpen ? (
+          "× Cerrar formulario"
+        ) : (
+          <>
+            <span className="icon">✉️</span> Suscríbete a nuestras novedades
+          </>
+        )}
+      </button>
+
+      {isOpen && (
+        <form
+          onSubmit={handleSubmit}
+          className={`lead-form ${success ? "success" : ""}`}
+          id="lead-form"
+        >
+          {success ? (
+            <div className="success-message">
+              <h3>¡Gracias por suscribirte!</h3>
+              <p>Te mantendremos informado con nuestras últimas novedades.</p>
+            </div>
+          ) : (
+            <>
+              <h3>Suscríbete para más información</h3>
+              <p>Recibe nuestras últimas actualizaciones y promociones</p>
+
+              {error && (
+                <div className="error-message" role="alert">
+                  {error}
+                </div>
+              )}
+
+              <div className="form-group">
+                <label htmlFor="name">Nombre</label>
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  placeholder="Tu nombre"
+                  value={formData.name}
+                  onChange={handleChange}
+                  onBlur={() => handleBlur("name")}
+                  required
+                  aria-describedby={touched.name && errors.name ? "name-error" : null}
+                  className={touched.name && errors.name ? "error" : ""}
+                />
+                {touched.name && errors.name && (
+                  <span id="name-error" className="error-text">
+                    {errors.name}
+                  </span>
+                )}
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="email">Email</label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  placeholder="tu@email.com"
+                  value={formData.email}
+                  onChange={handleChange}
+                  onBlur={() => handleBlur("email")}
+                  required
+                  aria-describedby={touched.email && errors.email ? "email-error" : null}
+                  className={touched.email && errors.email ? "error" : ""}
+                />
+                {touched.email && errors.email && (
+                  <span id="email-error" className="error-text">
+                    {errors.email}
+                  </span>
+                )}
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading || !isFormValid}
+                className="submit-button"
+              >
+                {loading ? (
+                  <>
+                    <span className="spinner" aria-hidden="true"></span>
+                    <span className="sr-only">Enviando...</span>
+                  </>
+                ) : (
+                  "Suscribirse"
+                )}
+              </button>
+            </>
+          )}
+        </form>
+      )}
     </div>
   );
+};
+
+LeadForm.propTypes = {
+  apiUrl: PropTypes.string,
 };
 
 export default LeadForm;
