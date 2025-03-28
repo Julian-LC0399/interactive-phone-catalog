@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { createLead } from '../../services/api';
 import { FiUser, FiMail, FiPhone } from 'react-icons/fi';
 import './LeadForm.css';
 
@@ -30,11 +29,12 @@ const LeadForm = () => {
     }
 
     try {
-      await createLead(formData);
+      // Simulación del envío sin necesidad de la API
+      console.log('Datos enviados:', formData);
       setSubmitted(true);
       setFormData({ name: '', email: '', phone: '', interest: '' });
     } catch (err) {
-      setError('Error al enviar el formulario. Por favor intenta de nuevo.');
+      setError('Error al procesar el formulario');
       console.error(err);
     }
   };
@@ -43,7 +43,7 @@ const LeadForm = () => {
     return (
       <div className="success-message">
         <h3>¡Gracias por tu interés!</h3>
-        <p>Nos pondremos en contacto contigo pronto con información sobre nuestros productos TECNO.</p>
+        <p>Nos pondremos en contacto contigo pronto.</p>
       </div>
     );
   }
@@ -51,7 +51,7 @@ const LeadForm = () => {
   return (
     <div className="lead-form-container">
       <h2>¿Interesado en nuestros productos?</h2>
-      <p>Déjanos tus datos y te contactaremos con más información.</p>
+      <p>Déjanos tus datos y te contactaremos.</p>
       
       {error && <div className="error-message">{error}</div>}
       
@@ -110,7 +110,6 @@ const LeadForm = () => {
             <option value="SPARK 10 Pro">SPARK 10 Pro</option>
             <option value="PHANTOM X2">PHANTOM X2</option>
             <option value="POVA 5 Pro">POVA 5 Pro</option>
-            <option value="No estoy seguro">No estoy seguro</option>
           </select>
         </div>
         
