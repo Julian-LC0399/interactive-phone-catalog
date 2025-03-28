@@ -10,7 +10,6 @@ const LeadForm = ({ apiUrl = "http://localhost:8000/api/leads" }) => {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [isOpen, setIsOpen] = useState(false);
   const [success, setSuccess] = useState(false);
   const [touched, setTouched] = useState({
     name: false,
@@ -61,11 +60,6 @@ const LeadForm = ({ apiUrl = "http://localhost:8000/api/leads" }) => {
       await axios.post(apiUrl, formData);
       setSuccess(true);
       setFormData({ name: "", email: "" });
-      // Auto-close form after 3 seconds
-      setTimeout(() => {
-        setIsOpen(false);
-        setSuccess(false);
-      }, 3000);
     } catch (err) {
       const errorMessage =
         err.response?.data?.message ||
@@ -76,113 +70,88 @@ const LeadForm = ({ apiUrl = "http://localhost:8000/api/leads" }) => {
     }
   };
 
-  const toggleForm = () => {
-    setIsOpen(!isOpen);
-    if (isOpen) {
-      setError("");
-      setSuccess(false);
-    }
-  };
-
   return (
     <div className="lead-form-wrapper">
-      <button
-        className={`lead-form-toggle ${isOpen ? "active" : ""}`}
-        onClick={toggleForm}
-        aria-expanded={isOpen}
-        aria-controls="lead-form"
+      <form
+        onSubmit={handleSubmit}
+        className={`lead-form ${success ? "success" : ""}`}
+        id="lead-form"
       >
-        {isOpen ? (
-          "× Cerrar formulario"
+        {success ? (
+          <div className="success-message">
+            <h3>¡Gracias por suscribirte!</h3>
+            <p>Te mantendremos informado con nuestras últimas novedades.</p>
+          </div>
         ) : (
           <>
-            <span className="icon">✉️</span> Suscríbete a nuestras novedades
+            <h3>Suscríbete para más información</h3>
+            <p>Recibe nuestras últimas actualizaciones y promociones</p>
+
+            {error && (
+              <div className="error-message" role="alert">
+                {error}
+              </div>
+            )}
+
+            <div className="form-group">
+              <label htmlFor="name">Nombre</label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                placeholder="Tu nombre"
+                value={formData.name}
+                onChange={handleChange}
+                onBlur={() => handleBlur("name")}
+                required
+                aria-describedby={touched.name && errors.name ? "name-error" : null}
+                className={touched.name && errors.name ? "error" : ""}
+              />
+              {touched.name && errors.name && (
+                <span id="name-error" className="error-text">
+                  {errors.name}
+                </span>
+              )}
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="email">Email</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                placeholder="tu@email.com"
+                value={formData.email}
+                onChange={handleChange}
+                onBlur={() => handleBlur("email")}
+                required
+                aria-describedby={touched.email && errors.email ? "email-error" : null}
+                className={touched.email && errors.email ? "error" : ""}
+              />
+              {touched.email && errors.email && (
+                <span id="email-error" className="error-text">
+                  {errors.email}
+                </span>
+              )}
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading || !isFormValid}
+              className="submit-button"
+            >
+              {loading ? (
+                <>
+                  <span className="spinner" aria-hidden="true"></span>
+                  <span className="sr-only">Enviando...</span>
+                </>
+              ) : (
+                "Suscribirse"
+              )}
+            </button>
           </>
         )}
-      </button>
-
-      {isOpen && (
-        <form
-          onSubmit={handleSubmit}
-          className={`lead-form ${success ? "success" : ""}`}
-          id="lead-form"
-        >
-          {success ? (
-            <div className="success-message">
-              <h3>¡Gracias por suscribirte!</h3>
-              <p>Te mantendremos informado con nuestras últimas novedades.</p>
-            </div>
-          ) : (
-            <>
-              <h3>Suscríbete para más información</h3>
-              <p>Recibe nuestras últimas actualizaciones y promociones</p>
-
-              {error && (
-                <div className="error-message" role="alert">
-                  {error}
-                </div>
-              )}
-
-              <div className="form-group">
-                <label htmlFor="name">Nombre</label>
-                <input
-                  type="text"
-                  id="name"
-                  name="name"
-                  placeholder="Tu nombre"
-                  value={formData.name}
-                  onChange={handleChange}
-                  onBlur={() => handleBlur("name")}
-                  required
-                  aria-describedby={touched.name && errors.name ? "name-error" : null}
-                  className={touched.name && errors.name ? "error" : ""}
-                />
-                {touched.name && errors.name && (
-                  <span id="name-error" className="error-text">
-                    {errors.name}
-                  </span>
-                )}
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="email">Email</label>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  placeholder="tu@email.com"
-                  value={formData.email}
-                  onChange={handleChange}
-                  onBlur={() => handleBlur("email")}
-                  required
-                  aria-describedby={touched.email && errors.email ? "email-error" : null}
-                  className={touched.email && errors.email ? "error" : ""}
-                />
-                {touched.email && errors.email && (
-                  <span id="email-error" className="error-text">
-                    {errors.email}
-                  </span>
-                )}
-              </div>
-
-              <button
-                type="submit"
-                disabled={loading || !isFormValid}
-                className="submit-button"
-              >
-                {loading ? (
-                  <>
-                    <span className="spinner" aria-hidden="true"></span>
-                    <span className="sr-only">Enviando...</span>
-                  </>
-                ) : (
-                  "Suscribirse"
-                )}
-              </button>
-            </>
-          )}
-        </form>
-      )}
+      </form>
     </div>
   );
 };

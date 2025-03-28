@@ -5,6 +5,7 @@ import LeadForm from './components/LeadForm/LeadForm';
 import Chatbot from './components/Chatbot/Chatbot';
 import Header from './components/Header/Header';
 import Footer from './components/Footer/Footer';
+import './App.css';
 
 function App() {
   return (
