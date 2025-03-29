@@ -3,6 +3,7 @@ import LeadForm from './components/LeadForm/LeadForm';
 import Chatbot from './components/Chatbot/Chatbot';
 import Header from './components/Header/Header';
 import Footer from './components/Footer/Footer';
+import PhoneList from './components/PhoneList/PhoneList';
 import './App.css';
 
 function App() {
@@ -12,6 +13,7 @@ function App() {
         <Header />
         <main>
           <Routes>
+            <Route path="/" element={<PhoneList />} />
             <Route path="/lead-form" element={<LeadForm />} />
           </Routes>
         </main>
