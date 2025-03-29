@@ -1,6 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import ProductList from './components/ProductList/ProductList';
-import ProductDetail from './components/ProductDetail/ProductDetail';
 import LeadForm from './components/LeadForm/LeadForm';
 import Chatbot from './components/Chatbot/Chatbot';
 import Header from './components/Header/Header';
@@ -15,7 +14,6 @@ function App() {
         <main>
           <Routes>
             <Route path="/" element={<ProductList />} />
-            <Route path="/product/:id" element={<ProductDetail />} />
             <Route path="/lead-form" element={<LeadForm />} />
           </Routes>
         </main>
