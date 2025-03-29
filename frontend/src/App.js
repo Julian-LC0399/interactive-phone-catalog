@@ -1,5 +1,4 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import ProductList from './components/ProductList/ProductList';
 import LeadForm from './components/LeadForm/LeadForm';
 import Chatbot from './components/Chatbot/Chatbot';
 import Header from './components/Header/Header';
@@ -13,7 +12,6 @@ function App() {
         <Header />
         <main>
           <Routes>
-            <Route path="/" element={<ProductList />} />
             <Route path="/lead-form" element={<LeadForm />} />
           </Routes>
         </main>
