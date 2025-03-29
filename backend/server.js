@@ -1,37 +1,32 @@
 const express = require('express');
 const cors = require('cors');
 const leadRoutes = require('./src/routes/leads');
-const phoneRoutes = require('./src/routes/phones');
+const phoneRoutes = require('./src/routes/phones'); // Nueva importación
 
-// Crear aplicación Express
 const app = express();
 
-// Configuración básica de CORS (puedes personalizarlo según tus necesidades)
 const corsOptions = {
-  origin: '*', // En producción cambia esto a tu dominio específico
+  origin: '*',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 };
 
-// Middlewares
-app.use(cors(corsOptions)); // Habilitar CORS con las opciones configuradas
-app.use(express.json()); // Para parsear application/json
+app.use(cors(corsOptions));
+app.use(express.json());
 
-// Rutas
+// Rutas existentes
 app.use('/api', leadRoutes);
-app.use('/api', phoneRoutes);
+app.use('/api/phones', phoneRoutes); // Nueva ruta para teléfonos
 
-// Ruta básica de health check
 app.get('/', (req, res) => {
   res.status(200).json({ status: 'running', message: 'API funcionando' });
 });
 
-// Manejo de errores 404
+// Resto del código (manejadores de error, etc.)
 app.use((req, res) => {
   res.status(404).json({ message: 'Ruta no encontrada' });
 });
 
-// Manejo centralizado de errores
 app.use((err, req, res, next) => {
   console.error('[ERROR]', err.stack);
   res.status(500).json({ 
@@ -40,10 +35,7 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Configuración del puerto
 const PORT = process.env.PORT || 8000;
-
-// Iniciar servidor
 app.listen(PORT, () => {
   console.log(`🟢 Servidor corriendo en http://localhost:${PORT}`);
 });
